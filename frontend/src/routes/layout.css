@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+
+* {
+    font-family: 'Open Sans', sans-serif;
+}
+
+body {
+    background-color: var(--color-slate-600);
+    overflow-y: hidden;
+}

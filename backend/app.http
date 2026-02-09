@@ -1,0 +1,37 @@
+@url=http://localhost:8000
+@contenttype=application/json
+
+### GET All Task
+GET {{url}}/tasks
+
+### GET One Task
+GET {{url}}/tasks/1
+
+### POST Task
+POST {{url}}/tasks
+Content-Type: {{contenttype}}
+
+{
+    "title": "Do Something",
+    "is_completed": "Pending"
+}
+
+### PUT/UPDATE Task - Partial
+PUT {{url}}/tasks/1
+Content-Type: {{contenttype}}
+
+{
+    "is_completed": "Completed"
+}
+
+### PUT/UPDATE Task - Full
+PUT {{url}}/tasks/1
+Content-Type: {{contenttype}}
+
+{
+    "title": "Do Homework",
+    "is_completed": "Pending"
+}
+
+### DELETE Task
+DELETE {{url}}/tasks/1
