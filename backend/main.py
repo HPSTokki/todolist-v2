@@ -1,6 +1,10 @@
-def main():
-    print("Hello from backend!")
+import uvicorn
 
 
 if __name__ == "__main__":
-    main()
+    uvicorn.run(
+        "src.main:app",
+        port=8000,
+        log_level=True,
+        reload=True
+    )
