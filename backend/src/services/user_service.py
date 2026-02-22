@@ -15,3 +15,12 @@ class UserService():
             "users": result
         }
         
+    def register_user(self, user_data: InsertUser) -> User:
+        user = User.model_validate(user_data)
+        
+        self.session.add(user)
+        self.session.commit()
+        self.session.refresh(user)
+        
+        return user
+        
