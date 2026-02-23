@@ -32,7 +32,7 @@ def test_add_task(session):
     assert result.description == "Eat Dinner Food"
     assert result.is_completed is True
     
-def test_add_and_get_tasks(session):
+def test_get_all_task(session):
     service = UserService(session)
     
     task_data = [
@@ -43,7 +43,24 @@ def test_add_and_get_tasks(session):
     for data in task_data:
         service.add_task(data)
     
-    result = session.exec(select(Task)).all()
+    result = service.get_all_task()
     pprint(result)
     assert result is not None
     
+def test_get_one_task_by_title(session):
+    service = UserService(session)
+    
+    task_data = [
+        InsertTask(title="Do Dishes", description="Do Dishes NOW",due_date=datetime.now(timezone.utc),  is_completed=False),
+        InsertTask(title="Do Dishes Again", description="Do Dishes LATER NOW", is_completed=False)
+    ]
+    
+    for data in task_data:
+        service.add_task(data)
+    
+    get_one_title = "Do Dishes" 
+    
+    result = service.get_one_task_by_title(get_one_title)
+    
+    pprint(result)
+    assert result.title == "Do Dishes"
