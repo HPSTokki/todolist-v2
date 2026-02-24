@@ -10,7 +10,6 @@ class UserService:
 
     def add_task(self, task_data: InsertTask) -> Task:
         task = Task(**task_data.model_dump(exclude_unset=True))
-
         self.session.add(task)
         self.session.commit()
         self.session.refresh(task)
@@ -33,8 +32,12 @@ class UserService:
     
     def delete_task_by_id(self, task_id: int) -> Task | None:
         task = self.session.get(Task, task_id) 
-        
         self.session.delete(task)
         self.session.commit()
-        
+        return task
+
+    def delete_task_by_name(self, task_name: str) -> Task | None:
+        task = self.session.exec(select(Task).where(Task.title.ilike(f"%{task_name}%"))).first()
+        self.session.delete(task)
+        self.session.commit()
         return task

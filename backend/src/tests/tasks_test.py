@@ -81,3 +81,17 @@ def test_delete_task_by_id(session):
     pprint("Delete One Task By ID" + str(result))
     pprint("-----------------------------------------------------------------")
     assert result.id == 1
+
+def test_delete_task_by_name(session):
+    service = UserService(session)
+
+    task_data = [
+        InsertTask(title="Do Dishes", description="Do Dishes NOW",due_date=datetime.now(timezone.utc),  is_completed=False),
+        InsertTask(title="Do Dishes Again", description="Do Dishes LATER NOW", is_completed=False)
+    ]
+    for data in task_data:
+        service.add_task(data)
+    result = service.delete_task_by_name("Do Dishes")
+    pprint("Delete One Task By Title" + str(result))
+    pprint("-----------------------------------------------------------------")
+    
