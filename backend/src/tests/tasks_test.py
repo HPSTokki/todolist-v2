@@ -44,7 +44,8 @@ def test_get_all_task(session):
         service.add_task(data)
     
     result = service.get_all_task()
-    pprint(result)
+    pprint("Get All Task:" + str(result))
+    pprint("-----------------------------------------------------------------")
     assert result is not None
     
 def test_get_one_task_by_title(session):
@@ -62,5 +63,21 @@ def test_get_one_task_by_title(session):
     
     result = service.get_one_task_by_title(get_one_title)
     
-    pprint(result)
+    pprint("Get One Task:" + str(result))
+    pprint("-----------------------------------------------------------------")
     assert result.title == "Do Dishes"
+
+def test_delete_task_by_id(session):
+    service = UserService(session)
+
+    task_data = [
+        InsertTask(title="Do Dishes", description="Do Dishes NOW",due_date=datetime.now(timezone.utc),  is_completed=False),
+        InsertTask(title="Do Dishes Again", description="Do Dishes LATER NOW", is_completed=False)
+    ]
+    for data in task_data:
+        service.add_task(data)
+    result = service.delete_task_by_id(1)
+    
+    pprint("Delete One Task By ID" + str(result))
+    pprint("-----------------------------------------------------------------")
+    assert result.id == 1

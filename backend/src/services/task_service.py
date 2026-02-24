@@ -19,17 +19,22 @@ class UserService:
     def get_all_task(self) -> list[Task]:
         stmt = select(Task)
         result = self.session.exec(stmt).all()
-
         return result
 
-    def get_one_task_by_id(self, task_id: int) -> Task:
+    def get_one_task_by_id(self, task_id: int) -> Task | None:
         stmt = select(Task, task_id)
         result = self.session.exec(stmt).first()
         return result
 
-    def get_one_task_by_title(self, task_name: str) -> Task:
+    def get_one_task_by_title(self, task_name: str) -> Task | None:
         stmt = select(Task).where(Task.title.ilike(f"{task_name}"))
-
         result = self.session.exec(stmt).first()
-
         return result
+    
+    def delete_task_by_id(self, task_id: int) -> Task | None:
+        task = self.session.get(Task, task_id) 
+        
+        self.session.delete(task)
+        self.session.commit()
+        
+        return task
