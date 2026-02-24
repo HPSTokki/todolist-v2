@@ -1,6 +1,6 @@
 from sqlmodel import Session, select
 
-from src.dtos.todolist_dto import InsertTask
+from src.dtos.todolist_dto import InsertTask, UpdateTask
 from src.models.todolist_model import Task
 
 
@@ -26,7 +26,7 @@ class UserService:
         return result
 
     def get_one_task_by_title(self, task_name: str) -> Task | None:
-        stmt = select(Task).where(Task.title.ilike(f"{task_name}"))
+        stmt = select(Task).where(Task.title.ilike(f"%{task_name}%"))
         result = self.session.exec(stmt).first()
         return result
     
@@ -40,4 +40,19 @@ class UserService:
         task = self.session.exec(select(Task).where(Task.title.ilike(f"%{task_name}%"))).first()
         self.session.delete(task)
         self.session.commit()
+        return task
+    
+    def update_task_by_id(self, task_id: int, update_data: UpdateTask) -> Task | None:
+        task = self.session.get(Task, task_id)
+        
+        if not task:
+            raise "No Data Found"
+        
+        updated_data = update_data.model_dump(exclude_unset=True)
+        
+        for key, value in updated_data.items():
+            setattr(task, key, value)
+
+        self.session.commit()
+        self.session.refresh(task)
         return task

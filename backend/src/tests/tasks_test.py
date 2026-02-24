@@ -4,7 +4,7 @@ from pprint import pprint
 import pytest
 from sqlmodel import SQLModel, Session, create_engine, select
 
-from src.dtos.todolist_dto import InsertTask
+from src.dtos.todolist_dto import InsertTask, UpdateTask
 from src.models.todolist_model import Task
 
 from src.services.task_service import UserService
@@ -94,4 +94,24 @@ def test_delete_task_by_name(session):
     result = service.delete_task_by_name("Do Dishes")
     pprint("Delete One Task By Title" + str(result))
     pprint("-----------------------------------------------------------------")
+    assert result.id == 1
+    
+def test_update_task_by_id(session):
+    service = UserService(session)
+
+    task_data = [
+        InsertTask(title="Do Dishes", description="Do Dishes NOW",due_date=datetime.now(timezone.utc),  is_completed=False),
+        InsertTask(title="Do Dishes Again", description="Do Dishes LATER NOW", is_completed=False)
+    ]
+    for data in task_data:
+        service.add_task(data)
+    update_data = UpdateTask(
+        title="Do Something",
+        is_completed=True
+    ) 
+    result = service.update_task_by_id(1, update_data)
+    pprint("Update Task by ID" + str(result))
+    pprint("-----------------------------------------------------------------")
+    assert result.title == "Do Something"
+    assert result.is_completed is True
     
