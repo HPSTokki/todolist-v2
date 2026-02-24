@@ -44,15 +44,11 @@ class UserService:
     
     def update_task_by_id(self, task_id: int, update_data: UpdateTask) -> Task | None:
         task = self.session.get(Task, task_id)
-        
         if not task:
             raise "No Data Found"
-        
         updated_data = update_data.model_dump(exclude_unset=True)
-        
         for key, value in updated_data.items():
             setattr(task, key, value)
-
         self.session.commit()
         self.session.refresh(task)
         return task

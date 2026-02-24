@@ -28,6 +28,7 @@ def test_add_task(session):
     result = service.add_task(task_data)
     
     assert result is not None
+    assert result.id == 1
     assert result.title == "Eat Food"
     assert result.description == "Eat Dinner Food"
     assert result.is_completed is True
@@ -42,12 +43,16 @@ def test_get_all_task(session):
     
     for data in task_data:
         service.add_task(data)
-    
     result = service.get_all_task()
-    pprint("Get All Task:" + str(result))
-    pprint("-----------------------------------------------------------------")
-    assert result is not None
-    
+    assert len(result) == 2
+    expected_title = ["Do Dishes", "Do Dishes Again"]
+    expected_id = [1, 2]
+    expected_description = ["Do Dishes NOW", "Do Dishes LATER NOW"]
+    for id, task in enumerate(result):
+        assert task.id == expected_id[id]
+        assert task.title == expected_title[id]
+        assert task.description == expected_description[id]
+     
 def test_get_one_task_by_title(session):
     service = UserService(session)
     
@@ -63,8 +68,6 @@ def test_get_one_task_by_title(session):
     
     result = service.get_one_task_by_title(get_one_title)
     
-    pprint("Get One Task:" + str(result))
-    pprint("-----------------------------------------------------------------")
     assert result.title == "Do Dishes"
 
 def test_delete_task_by_id(session):
@@ -78,8 +81,6 @@ def test_delete_task_by_id(session):
         service.add_task(data)
     result = service.delete_task_by_id(1)
     
-    pprint("Delete One Task By ID" + str(result))
-    pprint("-----------------------------------------------------------------")
     assert result.id == 1
 
 def test_delete_task_by_name(session):
@@ -92,8 +93,6 @@ def test_delete_task_by_name(session):
     for data in task_data:
         service.add_task(data)
     result = service.delete_task_by_name("Do Dishes")
-    pprint("Delete One Task By Title" + str(result))
-    pprint("-----------------------------------------------------------------")
     assert result.id == 1
     
 def test_update_task_by_id(session):
@@ -110,8 +109,6 @@ def test_update_task_by_id(session):
         is_completed=True
     ) 
     result = service.update_task_by_id(1, update_data)
-    pprint("Update Task by ID" + str(result))
-    pprint("-----------------------------------------------------------------")
     assert result.title == "Do Something"
     assert result.is_completed is True
     
