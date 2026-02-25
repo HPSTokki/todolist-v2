@@ -41,7 +41,7 @@ class UserService:
             raise TaskNotFound(f"Task not found with title: {task_name}")
         return result
     
-    def delete_task_by_id(self, task_id: int) -> Task | None:
+    def delete_task_by_id(self, task_id: int) -> Task | None: # Finished
         stmt = select(Task).where(Task.id == task_id) 
         result = self.session.exec(stmt).first()
         if not result: 
@@ -50,7 +50,7 @@ class UserService:
         self.session.commit()
         return result
 
-    def delete_task_by_name(self, task_name: str) -> Task | None:
+    def delete_task_by_name(self, task_name: str) -> Task | None: # Finished
         task = self.session.exec(select(Task).where(Task.title.ilike(f"%{task_name}%"))).first()
         if not task:
             raise TaskNotFound("Task doesn't exists")
@@ -59,7 +59,18 @@ class UserService:
         return task
     
     def update_task_by_id(self, task_id: int, update_data: UpdateTask) -> Task | None:
-        task = self.session.get(Task, task_id)
+        task = self.session.exec(select(Task).where(Task.id == task_id)).first()
+        if not task:
+            raise TaskNotFound("Task doesn't exists")
+        updated_data = update_data.model_dump(exclude_unset=True)
+        for key, value in updated_data.items():
+            setattr(task, key, value)
+        self.session.commit()
+        self.session.refresh(task)
+        return task
+    
+    def update_task_by_title(self, task_title: str, update_data: UpdateTask) -> Task | None:
+        task = self.session.exec(select(Task).where(Task.title == task_title)).first()
         if not task:
             raise TaskNotFound("Task doesn't exists")
         updated_data = update_data.model_dump(exclude_unset=True)
