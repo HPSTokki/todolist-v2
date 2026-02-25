@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 
 from src.models.todolist_model import Task
@@ -16,10 +16,13 @@ class UpdateTask(BaseModel):
     is_completed: bool | None = False
 
 class ReadTask(BaseModel):
+    id: int
     title: str | None = None
     description: str | None = None
-    due_data: datetime | None = None
+    due_date: datetime | None = None
     is_completed: bool | None = False
 
+    model_config = ConfigDict(from_attributes=True)
+
 class ListReadTask(BaseModel):
-    tasks: list[ReadTask] 
+    tasks: list[ReadTask]
