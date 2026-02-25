@@ -31,16 +31,21 @@ class UserService:
         return result
     
     def delete_task_by_id(self, task_id: int) -> Task | None:
-        task = self.session.get(Task, task_id) 
-        self.session.delete(task)
-        self.session.commit()
-        return task
+        stmt = select(Task).where(Task.id == task_id) 
+        result = self.session.exec(stmt).first()
+        if result: 
+            self.session.delete(result)
+            self.session.commit()
+            return result
+        return None
 
     def delete_task_by_name(self, task_name: str) -> Task | None:
         task = self.session.exec(select(Task).where(Task.title.ilike(f"%{task_name}%"))).first()
-        self.session.delete(task)
-        self.session.commit()
-        return task
+        if task:
+            self.session.delete(task)
+            self.session.commit()
+            return task
+        return None
     
     def update_task_by_id(self, task_id: int, update_data: UpdateTask) -> Task | None:
         task = self.session.get(Task, task_id)

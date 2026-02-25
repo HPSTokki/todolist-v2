@@ -80,8 +80,9 @@ def test_delete_task_by_id(session):
     for data in task_data:
         service.add_task(data)
     result = service.delete_task_by_id(1)
-    
-    assert result.id == 1
+    assert result is not None
+    deleted_task = service.get_all_task()
+    assert all(task.id != 1 for task in deleted_task)
 
 def test_delete_task_by_name(session):
     service = UserService(session)
@@ -93,7 +94,9 @@ def test_delete_task_by_name(session):
     for data in task_data:
         service.add_task(data)
     result = service.delete_task_by_name("Do Dishes")
-    assert result.id == 1
+    assert result is not None
+    deleted_task = service.get_all_task()
+    assert all(task.title != "Do Dishes" for task in deleted_task)
     
 def test_update_task_by_id(session):
     service = UserService(session)
