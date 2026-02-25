@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from src.dtos.todolist_dto import InsertTask, UpdateTask
 from src.models.todolist_model import Task
 
+from src.exception import TaskNotFound
 
 class UserService:
     def __init__(self, session: Session):
@@ -21,36 +22,40 @@ class UserService:
         return result
 
     def get_one_task_by_id(self, task_id: int) -> Task | None:
-        stmt = select(Task, task_id)
+        stmt = select(Task).where(Task.id == task_id)
         result = self.session.exec(stmt).first()
+        if not result:
+            raise TaskNotFound("Task Not Found")
         return result
 
     def get_one_task_by_title(self, task_name: str) -> Task | None:
         stmt = select(Task).where(Task.title.ilike(f"%{task_name}%"))
         result = self.session.exec(stmt).first()
+        if not result:
+            raise TaskNotFound(f"Task not found with title: {task_name}")
         return result
     
     def delete_task_by_id(self, task_id: int) -> Task | None:
         stmt = select(Task).where(Task.id == task_id) 
         result = self.session.exec(stmt).first()
-        if result: 
-            self.session.delete(result)
-            self.session.commit()
-            return result
-        return None
+        if not result: 
+            raise TaskNotFound("Task doesn't exists")
+        self.session.delete(result)
+        self.session.commit()
+        return result
 
     def delete_task_by_name(self, task_name: str) -> Task | None:
         task = self.session.exec(select(Task).where(Task.title.ilike(f"%{task_name}%"))).first()
-        if task:
-            self.session.delete(task)
-            self.session.commit()
-            return task
-        return None
+        if not task:
+            raise TaskNotFound("Task doesn't exists")
+        self.session.delete(task)
+        self.session.commit()
+        return task
     
     def update_task_by_id(self, task_id: int, update_data: UpdateTask) -> Task | None:
         task = self.session.get(Task, task_id)
         if not task:
-            raise "No Data Found"
+            raise TaskNotFound("Task doesn't exists")
         updated_data = update_data.model_dump(exclude_unset=True)
         for key, value in updated_data.items():
             setattr(task, key, value)

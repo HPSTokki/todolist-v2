@@ -70,6 +70,23 @@ def test_get_one_task_by_title(session):
     
     assert result.title == "Do Dishes"
 
+def test_get_one_task_by_id(session):
+    service = UserService(session)
+    
+    task_data = [
+        InsertTask(title="Do Dishes", description="Do Dishes NOW",due_date=datetime.now(timezone.utc),  is_completed=False),
+        InsertTask(title="Do Dishes Again", description="Do Dishes LATER NOW", is_completed=False)
+    ]
+    
+    for data in task_data:
+        service.add_task(data)
+    
+    get_one_title = 1 
+    
+    result = service.get_one_task_by_id(get_one_title)
+    
+    assert result.id == 1 
+
 def test_delete_task_by_id(session):
     service = UserService(session)
 
@@ -114,4 +131,3 @@ def test_update_task_by_id(session):
     result = service.update_task_by_id(1, update_data)
     assert result.title == "Do Something"
     assert result.is_completed is True
-    
