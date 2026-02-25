@@ -8,13 +8,19 @@ from src.services.task_service import UserService
 
 router = APIRouter(prefix="/tasks", tags=["Task"])
 
-@router.get("/", response_model=ListReadTask)
+@router.get("/all", response_model=ListReadTask)
 def get_all_tasks(session: SessionDep):
     service = UserService(session)
     tasks = service.get_all_task()
     return tasks
 
-@router.post("/", response_model=ReadTask)
+@router.get("/all-raw", response_model=list[Task])
+def get_all_tasks(session: SessionDep):
+    service = UserService(session)
+    tasks = service.get_all_task_raw()
+    return tasks
+
+@router.post("/add", response_model=ReadTask)
 def add_task(session: SessionDep, task_data: InsertTask):
     service = UserService(session)
     task = service.add_task(task_data)
@@ -44,3 +50,14 @@ def get_one_task_by_id(session: SessionDep, task_id: int):
             detail="Task not found"
         )
         
+@router.delete("/delete/{task_id}", response_model=Task)
+def delete_task_by_id(session: SessionDep, task_id: int):
+    service = UserService(session)
+    try:
+        task = service.delete_task_by_id(task_id)
+        return task
+    except TaskNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found, nothing deleted"
+        )
