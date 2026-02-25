@@ -14,3 +14,12 @@ class UpdateTask(BaseModel):
     description: str | None = None
     due_date: datetime | None = None
     is_completed: bool | None = False
+
+class ReadTask(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    due_data: datetime | None = None
+    is_completed: bool | None = False
+
+class ListReadTask(BaseModel):
+    tasks: list[ReadTask] 
