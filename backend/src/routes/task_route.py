@@ -38,6 +38,18 @@ def get_one_task_by_title(session: SessionDep, task_title: str):
             detail="Task not found"
         )
 
+@router.delete("/delete", response_model=Task)
+def delete_task_by_title(session: SessionDep, task_title: str):
+    service = UserService(session)
+    try:
+        task = service.delete_task_by_name(task_title)
+        return task
+    except TaskNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found, nothing deleted"
+        )
+        
 @router.get("/{task_id}", response_model=ReadTask)
 def get_one_task_by_id(session: SessionDep, task_id: int):
     service = UserService(session)
